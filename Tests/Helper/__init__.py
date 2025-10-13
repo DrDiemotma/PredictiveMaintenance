@@ -1,1 +1,2 @@
 from .data_generator import data_generator
+from .markov_model_generator import MarkovModelGenerator
