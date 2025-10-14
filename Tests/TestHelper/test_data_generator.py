@@ -9,9 +9,11 @@ from Tests.Helper import data_generator, MarkovModelGenerator
 ])
 def test_data_generator(sequence_length: int, dimension: int, batch_size: int, sequence_count: int):
     n_batches: int = 0
-    for batch in data_generator(sequence_length, dimension, batch_size, sequence_count):
-        assert len(batch) == batch_size
-        for sequence in batch:
+    for batch_tuple in data_generator(sequence_length, dimension, batch_size, sequence_count):
+        assert len(batch_tuple[0]) == batch_size and len(batch_tuple[1]) == batch_size
+        for sequence in batch_tuple[0]:
+            assert len(sequence) == sequence_length
+        for sequence in batch_tuple[1]:
             assert len(sequence) == sequence_length
 
         n_batches += 1
