@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 from typing import Callable, Generator
 
-def make_tf_dataset(generator_function: Callable[[], Generator[np.typing.NDArray, None, None]],
+def make_tf_dataset(generator_function: Callable[[], Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]],
                     sequence_length: int,
                     feature_count: int,
                     batch_size: int) -> tf.data.Dataset:
