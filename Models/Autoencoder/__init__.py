@@ -1,3 +1,4 @@
 from .lstm_autoencoder import build_lstm_autoencoder
+from .gru_autoencoder import build_gru_autoencoder
 from .generator_wrapper import make_tf_dataset
 from .transformer_autoencoder import build_transformer_autoencoder
