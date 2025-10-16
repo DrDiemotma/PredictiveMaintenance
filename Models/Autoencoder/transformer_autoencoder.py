@@ -73,9 +73,44 @@ def build_transformer_autoencoder(sequence_length: int,
                                   latent_dim: int = 32,
                                   dropout_rate: float = 0.2,
                                   learning_rate: float = 1e-3) -> tf.keras.Model:
+    """
+    Build a model for a transformer autoencoder. This implementation utilizes a "bottleneck" to be more sensitive to
+    unprecedented observations. This makes it more suitable as an event detector than a generative model.
+    :param sequence_length: Length of an analyzed sequence.
+    :param feature_count: Dimension of the measurements.
+    :param embedding_size: Embedding dimension for the attention heads.
+    :param attention_head_counts: Head count for the multi layer heads.
+    :param dff: dimension of the feed forward networks.
+    :param num_encoder_layers: Number of encoder layers.
+    :param num_decoder_layers: Number of decoder layers.
+    :param latent_dim: Size of the latent dimension (bottleneck).
+    :param dropout_rate: Dropout rate used in different
+    :param learning_rate: Adaption rate in each step.
+    :return: A model to be trained on data.
+    :raises ValueError: When one parameter is out of valid spaces.
+    """
     if (embedding_size % attention_head_counts != 0) or (embedding_size < attention_head_counts):
         raise ValueError("The embedding size must be divisible by the number of attention heads.")
-
+    if sequence_length < 1:
+        raise ValueError("The sequence must have a positive length.")
+    if feature_count < 1:
+        raise ValueError("The dimension of the measurements must be at least one dimensional.")
+    if embedding_size < 1:
+        raise ValueError("The embedding size must be positive.")
+    if attention_head_counts < 1:
+        raise ValueError("The number of attention heads must be positive.")
+    if dff < 1:
+        raise ValueError("The dimension of the feed forward network must be positive.")
+    if num_encoder_layers < 1:
+        raise ValueError("At least one encoder layer must be used.")
+    if num_decoder_layers < 1:
+        raise ValueError("At least one decoder layer must be used.")
+    if latent_dim < 1:
+        raise ValueError("The size of the bottleneck must be positive.")
+    if dropout_rate < 0 or dropout_rate > 1:
+        raise ValueError("The dropout rate must be between 0 and 1.")
+    if learning_rate <= 0:
+        raise ValueError("The learning rate must be positive.")
 
     inputs = layers.Input(shape=(sequence_length, feature_count), name="input_layer")
     encoding = tf.constant(positional_encoding(sequence_length, embedding_size))
@@ -91,16 +126,20 @@ def build_transformer_autoencoder(sequence_length: int,
     # make a bottleneck here -> layers.GlobalAveragePooling1D -> Dense(latent_dim, activation="relu")
     gap = layers.GlobalAvgPool1D(name="latent_pooling")(encoder_output)
     encoder_output = layers.Dense(latent_dim, activation="relu", name="latent_layer")(gap)
+    encoder_output = layers.Dense(embedding_size, activation="relu", name="latent_layer_extension")(encoder_output)
     expanded = layers.Lambda(lambda t: tf.repeat(t[:, tf.newaxis, :], repeats=sequence_length, axis=1),
                              name="latent_broadcast")(encoder_output)
+
+
 
     decoder_input_projection = layers.Dense(embedding_size, name="decoder_input_projection")(expanded) \
         + encoding[tf.newaxis, :, :]
     decoder_input_dropout = layers.Dropout(dropout_rate, name="decoder_dropout")(decoder_input_projection)
-
     decoder_output = decoder_input_dropout
+    encoder_expanded_for_mha = layers.Lambda(lambda t: tf.expand_dims(t, axis=1), name="encoder_expanded_for_mha")(
+        encoder_output)
     for i in range(0, num_decoder_layers):
-        decoder_output = transformer_decoder_block(decoder_output, encoder_output, embedding_size,
+        decoder_output = transformer_decoder_block(decoder_output, encoder_expanded_for_mha, embedding_size,
                                                    attention_head_counts, dff, dropout_rate, f"decoder_{i}")
 
     outputs = layers.TimeDistributed(layers.Dense(feature_count, activation="linear"), name="reconstruction")(decoder_output)
