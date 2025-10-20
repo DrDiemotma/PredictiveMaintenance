@@ -28,4 +28,4 @@ def test_autoencoder_predictor(sequence_length, dimension, batch_size, sequence_
         false_positives += sum(predictions)
         counters += len(predictions)
     prediction_limit = 0.05 * counters
-    assert false_positives <= prediction_limit, f"Too many false positives in this test scenario: expected {prediction_limit} but was {prediction_count}."
+    assert false_positives <= prediction_limit, f"Too many false positives in this test scenario: expected {prediction_limit} but was {false_positives}."
