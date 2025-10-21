@@ -40,4 +40,4 @@ Autoencoder to be used are:
  * LSTM
  * Transformer
 
- * The default is GRU.
+The default is GRU.
