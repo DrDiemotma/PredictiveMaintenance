@@ -3,20 +3,36 @@ from enum import IntEnum
 
 
 class EwmaDirection(IntEnum):
+    """Direction of the EWMA threshold direction."""
     BOTH = 0
+    """Process is is limited to both, upper and lower boundary."""
     UPPER_BOUNDARY = 1
+    """Process is limited to upper but not lower boundary."""
     LOWER_BOUNDARY = -1
+    """Process is limited to lower but not upper boundary."""
 
 
 @dataclass(frozen=True)
 class EwmaResult:
+    """Result of an exponentially weighted moving average."""
     filtered_value: float
+    """The filtered value."""
     exceeds_threshold: bool
+    """Whether the value exceeds the preset threshold."""
 
 class EwmaTest:
+    """Exponentially weighted moving average process."""
     def __init__(self, initial_value: float, alpha: float, threshold: float,
                  direction: EwmaDirection = EwmaDirection.BOTH,
                  bias: float = 0.0):
+        """
+        ctor.
+        :param initial_value: Initial value of the process.
+        :param alpha: Adaption rate, (0..1].
+        :param threshold: Threshold when an event is detected.
+        :param direction: Direction to detect events.
+        :param bias: Bias for the data to shift the process.
+        """
 
         if alpha <= 0 or alpha > 1:
             raise ValueError(f"Valid interval for adaption value alpha: [0..1), was {alpha}.")
