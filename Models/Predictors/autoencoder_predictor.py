@@ -30,11 +30,10 @@ class AutoencoderPredictor:
     def trained(self):
         return self._history is not None
 
-    def fit(self, data_generator: Callable, threshold: float = 1.96, *args, **kwargs) -> History:
+    def fit(self, data_generator: Callable, *args, **kwargs) -> History:
         """
         Fit the model to the provided data.
         :param data_generator: Generator for the data.
-        :param threshold: Threshold to define how many times the standard deviation of training data the threshold is set.
         :param args: args for the model fit. Uses TensorFlow notation.
         :param kwargs: kwargs for the model fit. Uses TensorFlow notation.
         :return: History of the training.
