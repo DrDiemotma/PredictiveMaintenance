@@ -7,9 +7,9 @@ In order to use this module, clone the repository into your project.
 After that, you can use the implemented methods.
 
 ## Installation
-Clone the repository: <pre>```bash git clone git@github.com:DrDiemotma/PredictiveMaintenance.git```</pre>
+Clone the repository: ```bash git clone git@github.com:DrDiemotma/PredictiveMaintenance.git```
 
-As a submodule to include in your projects: <pre>```git submodule git@github.com:DrDiemotma/PredictiveMaintenance.git```</pre>
+As a submodule to include in your projects: ```git submodule git@github.com:DrDiemotma/PredictiveMaintenance.git```
 
 ## Models
 In the folder Models, you will find tools to design statistical signal processing base methods for event detection.
@@ -54,11 +54,11 @@ Use the Transformer autoencoder for very long and high dimensional series only, 
 ## Applications
 The application is for measuring deviations.
 Prepare your data with a  generator caller with signature 
-<pre>
+
 ```python
 from collections.abc import Callable, Generator
 import numpy as np
 
 generator: Callable[[], Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]]```
-</pre>
+
 that is a generator which yields to sequences of equal type `dtype=np.float32`.
