@@ -1,21 +1,23 @@
+# Predictive Maintenance Submodule
+
 This is a package for predictive maintenance tools written in Python.
 This package can be included in projects free of charge according to the MIT license.
 
 In order to use this module, clone the repository into your project.
 After that, you can use the implemented methods.
 
-# Installation
-Clone the repository: `git clone git@github.com:DrDiemotma/PredictiveMaintenance.git`
+## Installation
+Clone the repository: <pre>```bash git clone git@github.com:DrDiemotma/PredictiveMaintenance.git```</pre>
 
-As a submodule to include in your projects: `git submodule git@github.com:DrDiemotma/PredictiveMaintenance.git`
+As a submodule to include in your projects: <pre>```git submodule git@github.com:DrDiemotma/PredictiveMaintenance.git```</pre>
 
-# Models
+## Models
 In the folder Models, you will find tools to design statistical signal processing base methods for event detection.
 To include those, use:
 * `import PredictiveMaintenance.Models.Autoencoder` for implemented Autoencoder. Please notice that they are specially designed for event detection and might not be useful otherwise.
-* `import PredictiveMaintenance.models.Predictors` for the predictor models.
+* `import PredictiveMaintenance.Models.Predictors` for the predictor models.
 
-# How to Use
+## How to Use
 Examples can be found in the `Tests` folder.
 Most present classes are tested here.
 
@@ -28,16 +30,35 @@ Once the TensorFlow dataset is generated, one of the autoencoder in `PredictiveM
 Furthermore, the package provides a CUSUM and a EWMA test for patient even detection.
 Those are in `PredictiveMaintenance.Models.Aggregation`.
 
-## Predictors
+### Predictors
 The main tools are provided in `PredictiveMaintenance.Models.Predictors`.
 Here, you will find the `AutoencoderPredictor` class.
 The `AutoencoderPredictor` configures the autoencoder type and provides the two methods `fit` and `predict`.
 This tool allows to transform a sequence into a prediction of deviations and applies a threshold to the results.
 That means, it detects deviations of the sequence is not to be predicted using the underlying autoencoder.
 
-Autoencoder to be used are:
+Notice that those predictors "predict" a sequence after a reconstruction.
+The autoencoder predicts sequences of the same length, which is very commonly the same as the input sequence.
+Because of the latent dimension of the bottleneck layers, the values are not simply passed forward through the model.
+That said, make sure that `latent_dim` is set smaller than your dimension times sequence length in this case.
+
+Autoencoder in this setup are:
  * GRU
  * LSTM
  * Transformer
 
 The default is GRU.
+This should work for most series.
+Use the Transformer autoencoder for very long and high dimensional series only, since they tend to overfit your training data.
+
+## Applications
+The application is for measuring deviations.
+Prepare your data with a  generator caller with signature 
+<pre>
+```python
+from collections.abc import Callable, Generator
+import numpy as np
+
+generator: Callable[[], Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]]```
+</pre>
+that is a generator which yields to sequences of equal type `dtype=np.float32`.
