@@ -7,9 +7,15 @@ In order to use this module, clone the repository into your project.
 After that, you can use the implemented methods.
 
 ## Installation
-Clone the repository: ```bash git clone git@github.com:DrDiemotma/PredictiveMaintenance.git```
+Clone the repository: 
+```bash 
+git clone git@github.com:DrDiemotma/PredictiveMaintenance.git
+```
 
-As a submodule to include in your projects: ```git submodule git@github.com:DrDiemotma/PredictiveMaintenance.git```
+As a submodule to include in your projects: 
+```bash
+git submodule git@github.com:DrDiemotma/PredictiveMaintenance.git
+```
 
 ## Models
 In the folder Models, you will find tools to design statistical signal processing base methods for event detection.
@@ -53,12 +59,25 @@ Use the Transformer autoencoder for very long and high dimensional series only, 
 
 ## Applications
 The application is for measuring deviations.
-Prepare your data with a  generator caller with signature 
+Prepare your data with a generator callback with signature 
 
 ```python
 from collections.abc import Callable, Generator
 import numpy as np
 
-generator: Callable[[], Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]]```
+generator_func: Callable[[], Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]]
+```
+That is a function which returns a generator which then yields to sequences of equal type `dtype=np.float32`.
+Notice that the generator is consumed by training and threshold estimation which is used several times.
+Hence, the function must return fresh generators:
 
-that is a generator which yields to sequences of equal type `dtype=np.float32`.
+```python
+from collections.abc import Generator
+import numpy as np
+
+def func() -> Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]:
+    ...
+
+```
+
+With this, you use `func`, not `func()`, when using the autoencoder predictor.
