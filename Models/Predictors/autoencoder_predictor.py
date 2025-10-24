@@ -3,8 +3,8 @@ from tensorflow.keras.models import Model
 from tensorflow.data import Dataset
 from tensorflow.keras.callbacks import History
 import numpy as np
-from Models.Predictors.autoencoder_enum import AutoencoderType
-from Models import Autoencoder
+from .autoencoder_enum import AutoencoderType
+from .. import Autoencoder
 
 class AutoencoderPredictor:
     def __init__(self, sequence_length: int, feature_count: int, batch_size: int,
