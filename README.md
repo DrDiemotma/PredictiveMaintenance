@@ -80,4 +80,29 @@ def func() -> Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]
 
 ```
 
-With this, you use `func`, not `func()`, when using the autoencoder predictor.
+This procedure was chosen to work with large, distributed data sets.
+With this, you use `func`, not `func()`, when using the autoencoder predictor:
+```python
+from collections.abc import Callable, Generator
+import numpy as np
+from Models.Predictors import AutoencoderPredictor
+
+SEQUENCE_LENGTH = 10  # length of an evaluated sequence
+BATCH_SIZE = 5  # size of each batch of sequences for each training step
+FEATURE_SIZE = 3  # dimension of the data
+EPOCHS = 5  # number of epochs in the training
+
+def func() -> Generator[tuple[np.typing.NDArray, np.typing.NDArray], None, None]:
+    while True:
+        ...
+        yield np.array(...), np.array(...)
+        
+
+predictor = AutoencoderPredictor(SEQUENCE_LENGTH, FEATURE_SIZE, BATCH_SIZE)
+predictor.fit(func, epochs=EPOCHS)  # kwargs are handed over to the tensorflow classes
+
+# now we can apply the filter to new data
+for data in func():
+    predictions, scores = predictor.predict(data)
+```
+
