@@ -7,8 +7,27 @@ from .autoencoder_enum import AutoencoderType
 from .. import Autoencoder
 
 class AutoencoderPredictor:
+    """
+    Autoencoder based predictor class for event detection.
+    """
     def __init__(self, sequence_length: int, feature_count: int, batch_size: int,
                  encoder: AutoencoderType = AutoencoderType.GRU, *args, **kwargs):
+        """
+        Ctor.
+        :param sequence_length: Length of a sequence to be analyzed.
+        :param feature_count: Dimension of each sample.
+        :param batch_size: Batch sizes for the training.
+        :param encoder: Type of autoencoder to use.
+        :param args: Passed to the respective autoencoder.
+        :param kwargs: Passed to the respective autoencoder.
+        :raises ValueError: If the input parameters are not valid.
+        """
+        if sequence_length <= 0:
+            raise ValueError("sequence_length must be positive.")
+        if feature_count <= 0:
+            raise ValueError("feature_count must be positive.")
+        if batch_size <= 0:
+            raise ValueError("batch_size must be positive.")
         self._sequence_length: int = sequence_length
         self._feature_count: int = feature_count
         self._batch_size = batch_size
