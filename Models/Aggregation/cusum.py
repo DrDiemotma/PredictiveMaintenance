@@ -47,21 +47,30 @@ class CusumTest:
 
     @property
     def mu(self):
+        """Mean value of the filter."""
         return self._mu
 
     @mu.setter
     def mu(self, value):
+        """Mean value of the filter."""
         self._mu = value
 
     @property
     def slack(self):
+        """Slack of the filter."""
         return self._slack
 
     @slack.setter
     def slack(self, value):
+        """Slack of the filter."""
         self._slack = value
 
     def next(self, value: float) -> CusumAlert:
+        """
+        Add the next value to the filter.
+        :param value: The value to add.
+        :return: Description of the evaluation.
+        """
         self._c_plus = max(0.0, self._c_plus + (value - self._mu - self._slack))
         self._c_minus = min(0.0, self._c_minus + (value - self._mu + self._slack))
 
@@ -93,4 +102,9 @@ class CusumTest:
         )
 
     def run(self, values: Iterable[float]) -> list[CusumAlert]:
+        """
+        Run the evaluation on a sequence of added data entries.
+        :param values: The sequence of values the filter processes.
+        :return: list of evaluation results.
+        """
         return [self.next(x) for x in values]
