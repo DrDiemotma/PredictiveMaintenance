@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import IntEnum
-
+from .adaptive_filter_base import FilterBase
 
 class EwmaDirection(IntEnum):
     """Direction of the EWMA threshold direction."""
@@ -20,7 +20,7 @@ class EwmaResult:
     exceeds_threshold: bool
     """Whether the value exceeds the preset threshold."""
 
-class EwmaTest:
+class EwmaTest(FilterBase):
     """Exponentially weighted moving average process."""
     def __init__(self, initial_value: float, alpha: float, threshold: float,
                  direction: EwmaDirection = EwmaDirection.BOTH,
@@ -46,6 +46,11 @@ class EwmaTest:
         self._current_value: float = initial_value - bias
 
     def next(self, value: float):
+        """
+        Add the next value to the filter.
+        :param value: Value to add to the filter.
+        :return: The evaluation result.
+        """
         self._current_value = self._alpha * (value - self._bias) + (1 - self._alpha) * self._current_value
         exceedance = False
         match self._direction:
@@ -58,6 +63,11 @@ class EwmaTest:
 
         return EwmaResult(filtered_value=self._current_value + self._bias, exceeds_threshold=exceedance)
 
-    def reset(self, value: float = 0.0):
+    def reset(self, value: float = 0.0) -> None:
+        """
+        Reset the filter.
+        :param value: Value to reset the filter to.
+        :return: None.
+        """
         self._current_value = value
 
