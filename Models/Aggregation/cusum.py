@@ -1,6 +1,6 @@
-from collections.abc import Iterable
 from enum import IntEnum
 from dataclasses import dataclass
+from .adaptive_filter_base import FilterBase
 
 class CusumAlertDirection(IntEnum):
     """
@@ -28,7 +28,7 @@ class CusumAlert:
     """Whether this even was critical."""
 
 
-class CusumTest:
+class CusumTest(FilterBase):
     """
     Cumulative sum test for an event based setup.
     """
@@ -101,10 +101,4 @@ class CusumTest:
             is_critical=False
         )
 
-    def run(self, values: Iterable[float]) -> list[CusumAlert]:
-        """
-        Run the evaluation on a sequence of added data entries.
-        :param values: The sequence of values the filter processes.
-        :return: list of evaluation results.
-        """
-        return [self.next(x) for x in values]
+
